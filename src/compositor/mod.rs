@@ -1,1 +1,28 @@
 pub mod input;
+pub mod hyprland;
+use std::error::Error;
+use crate::event::Event;
+pub type CompositorResult = Result<(), Box<dyn Error + Send + Sync>>;
+/// Central compositor interface used by the dispatcher.
+pub trait Compositor {
+    /// Initialize compositor integration (set up IPC, validate availability).
+    fn init(&mut self) -> CompositorResult;
+
+    /// Human-readable compositor name.
+    fn name(&self) -> &'static str;
+
+    /// Fast check to see if the compositor is running/available.
+    fn is_running(&self) -> bool;
+
+    /// Whether a given event is supported by this compositor.
+    fn supports(&self, event: &Event) -> bool;
+
+    /// Apply a single event to the compositor.
+    fn apply_event(&self, event: Event) -> CompositorResult;
+
+    /// Optional reload hook if compositor exposes a reload action.
+    fn reload(&self) -> CompositorResult;
+
+    /// Optional shutdown/cleanup hook.
+    fn shutdown(&self) -> CompositorResult;
+}
