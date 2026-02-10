@@ -1,7 +1,8 @@
-pub mod input;
 pub mod hyprland;
-use std::error::Error;
+pub mod input;
+pub mod sway;
 use crate::event::Event;
+use std::error::Error;
 pub type CompositorResult = Result<(), Box<dyn Error + Send + Sync>>;
 /// Central compositor interface used by the dispatcher.
 pub trait Compositor {
@@ -36,8 +37,13 @@ pub fn init_compositor(desktop: crate::identifier::Desktop) -> Option<Box<dyn Co
             }
             None
         }
+        crate::identifier::Desktop::Sway => {
+            let mut compositor = sway::Sway::new();
+            if compositor.init().is_ok() {
+                return Some(Box::new(compositor));
+            }
+            None
+        }
         _ => None,
     }
 }
-
-
