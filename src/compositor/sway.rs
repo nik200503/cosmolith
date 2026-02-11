@@ -160,7 +160,7 @@ impl Compositor for Sway {
     }
 }
 
-// #todo: For all Ok(()) if there exists a if let Some(), 
+// #todo: For all Ok(()) if there exists a if let Some(),
 // define a error variants for such errors and send upwards
 impl Input for Sway {
     fn keyboard_rules(&self, rules: String) -> InputResult {
