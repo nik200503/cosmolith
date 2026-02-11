@@ -65,6 +65,7 @@ impl Hyprland {
             _ => "lrm",
         }
     }
+
 }
 
 impl Compositor for Hyprland {
@@ -337,35 +338,43 @@ impl Input for Hyprland {
     // }
 
     fn keyboard_rules(&self, rules: String) -> InputResult {
-        // TODO: Hyprland does not expose an IPC keyword for XKB rules.
-        dbg!("Hyprland: keyboard rules not supported", rules);
-        Ok(())
+        self.set_keyword("input:kb_rules", rules)
     }
 
     fn keyboard_layout(&self, layout: String) -> InputResult {
-        // TODO: Hyprland does not expose an IPC keyword for XKB layout.
-        dbg!("Hyprland: keyboard layout not supported", layout);
-        Ok(())
+        self.set_keyword("input:kb_layout", layout)
     }
 
     fn keyboard_model(&self, model: String) -> InputResult {
-        // TODO: Hyprland does not expose an IPC keyword for XKB model.
-        dbg!("Hyprland: keyboard model not supported", model);
-        Ok(())
+        self.set_keyword("input:kb_model", model)
     }
 
     fn keyboard_options(&self, options: Option<String>) -> InputResult {
         if let Some(options) = options {
-            let cleaned = options.trim_start_matches(',');
+            // Hyprland expects a clean comma-separated list with no leading/trailing commas
+            // and no empty segments. Normalize by trimming edge commas/whitespace, dropping
+            let cleaned = options
+                .trim_matches(|c: char| c == ',' || c.is_whitespace())
+                .split(',')
+                .filter_map(|part| {
+                    let trimmed = part.trim();
+                    if trimmed.is_empty() {
+                        None
+                    } else {
+                        Some(trimmed)
+                    }
+                })
+                .collect::<Vec<_>>()
+                // empty segments, and re-joining with commas.
+                .join(",");
+
             return self.set_keyword("input:kb_options", cleaned);
         }
         Ok(())
     }
 
     fn keyboard_variant(&self, variant: String) -> InputResult {
-        // TODO: Hyprland does not expose an IPC keyword for XKB variant.
-        dbg!("Hyprland: keyboard variant not supported", variant);
-        Ok(())
+        self.set_keyword("input:kb_variant", variant)
     }
 
     fn keyboard_repeat_delay(&self, delay: u32) -> InputResult {
