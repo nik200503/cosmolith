@@ -1,10 +1,12 @@
 use std::error::Error;
 
-use crate::event::input::{KeyboardEvent, MouseEvent, TouchpadEvent};
+use crate::event::input::{KeyboardEvent, MouseEvent, TouchpadEvent, NumsLockEvent};
 
 use cosmic_comp_config::input::{
     AccelConfig, ClickMethod, DeviceState, ScrollConfig, ScrollMethod, TapButtonMap, TapConfig,
 };
+
+use cosmic_comp_config::NumlockState;
 
 pub type InputResult = Result<(), Box<dyn Error + Send + Sync>>;
 
@@ -19,6 +21,12 @@ pub trait Input {
             KeyboardEvent::Options(v) => self.keyboard_options(v),
             KeyboardEvent::RepeatDelay(v) => self.keyboard_repeat_delay(v),
             KeyboardEvent::RepeatRate(v) => self.keyboard_repeat_rate(v),
+        }
+    }
+
+    fn apply_numslock_event(&self, event: NumsLockEvent) -> InputResult {
+        match event {
+            NumsLockEvent::State(v) => self.numslock_state(v),
         }
     }
 
@@ -92,6 +100,11 @@ pub trait Input {
     }
     fn keyboard_repeat_rate(&self, rate: u32) -> InputResult {
         eprintln!("keyboard_repeat_rate not implemented: {:?}", rate);
+        Ok(())
+    }
+
+    fn numslock_state(&self, state: NumlockState) -> InputResult {
+        eprintln!("numslock_state not implemented: {:?}", state);
         Ok(())
     }
 

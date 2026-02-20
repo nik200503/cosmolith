@@ -8,6 +8,7 @@ use std::env;
 use cosmic_comp_config::input::{
     AccelConfig, AccelProfile, ClickMethod, ScrollConfig, ScrollMethod, TapButtonMap, TapConfig,
 };
+use cosmic_comp_config::NumlockState;
 
 #[derive(Debug, Default)]
 pub struct Hyprland {
@@ -94,6 +95,7 @@ impl Compositor for Hyprland {
             Event::Input(InputEvent::TouchPad(ev)) => self.apply_touchpad_event(ev),
             Event::Input(InputEvent::Mouse(ev)) => self.apply_mouse_event(ev),
             Event::Input(InputEvent::Keyboard(ev)) => self.apply_keyboard_event(ev),
+            Event::Input(InputEvent::NumsLock(ev)) => self.apply_numslock_event(ev),
         }
     }
 
@@ -108,6 +110,14 @@ impl Compositor for Hyprland {
 
 // #todo: For all the todos -> Find equivalent functions in documentation and update
 impl Input for Hyprland {
+    fn numslock_state(&self, state: NumlockState) -> InputResult {
+        match state {
+            NumlockState::BootOn => self.set_keyword("input:numlock_by_default", "true"),
+            NumlockState::BootOff => self.set_keyword("input:numlock_by_default", "false"),
+            NumlockState::LastBoot => Ok(()), // Don't change
+        }
+    }
+
     // fn touchpad_state(&self, _state: DeviceState) -> InputResult {
     //     // TODO: Hyprland does not expose a direct enable/disable for touchpad.
     //     dbg!("Hyprland: touchpad enable/disable not supported");

@@ -11,6 +11,7 @@ use crate::event::input::InputEvent;
 use cosmic_comp_config::input::{
     AccelConfig, AccelProfile, ClickMethod, ScrollConfig, ScrollMethod, TapConfig,
 };
+use cosmic_comp_config::NumlockState;
 
 #[derive(Debug, Default)]
 pub struct Sway {
@@ -148,6 +149,7 @@ impl Compositor for Sway {
             Event::Input(InputEvent::TouchPad(ev)) => self.apply_touchpad_event(ev),
             Event::Input(InputEvent::Mouse(ev)) => self.apply_mouse_event(ev),
             Event::Input(InputEvent::Keyboard(ev)) => self.apply_keyboard_event(ev),
+            Event::Input(InputEvent::NumsLock(ev)) => self.apply_numslock_event(ev),
         }
     }
 
@@ -193,6 +195,14 @@ impl Input for Sway {
 
     fn keyboard_repeat_rate(&self, rate: u32) -> InputResult {
         self.run_command(format!("input type:keyboard repeat_rate {rate}"))
+    }
+
+    fn numslock_state(&self, state: NumlockState) -> InputResult {
+        match state {
+            NumlockState::BootOn => self.run_command("input type:keyboard xkb_numlock enabled".to_string()),
+            NumlockState::BootOff => self.run_command("input type:keyboard xkb_numlock disabled".to_string()),
+            NumlockState::LastBoot => Ok(()), // Don't change
+        }
     }
 
     // fn touchpad_state(&self, _state: DeviceState) -> InputResult {
