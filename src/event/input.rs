@@ -11,7 +11,6 @@ pub enum InputEvent {
     TouchPad(TouchpadEvent),
     Mouse(MouseEvent),
     Keyboard(KeyboardEvent),
-    NumsLock(NumsLockEvent),
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -30,13 +29,9 @@ pub enum KeyboardEvent {
     RepeatDelay(u32),
     /// Key repeat rate in Hz.
     RepeatRate(u32),
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub enum NumsLockEvent {
     /// Numlock state.
-    /// NumlockState::On | Off | Keep.
-    State(NumlockState),
+    /// NumlockState::BootOn | BootOff | LastBoot.
+    NumLock(NumlockState),
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -477,8 +472,8 @@ impl KeyboardEvent {
     }
 }
 
-impl NumsLockEvent {
-    pub fn from(old: KeyboardConfig, new: KeyboardConfig) -> Vec<Event> {
+impl KeyboardEvent {
+    pub fn from_keyboard_config(old: KeyboardConfig, new: KeyboardConfig) -> Vec<Event> {
         if old == new {
             return vec![];
         }
@@ -486,7 +481,7 @@ impl NumsLockEvent {
         let mut events = Vec::new();
 
         if old.numlock_state != new.numlock_state {
-            let event = Event::Input(InputEvent::NumsLock(NumsLockEvent::State(
+            let event = Event::Input(InputEvent::Keyboard(KeyboardEvent::NumLock(
                 new.numlock_state,
             )));
             events.push(event);

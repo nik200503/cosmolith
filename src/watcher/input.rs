@@ -8,7 +8,7 @@ use cosmic_config::{Config, ConfigGet};
 
 use crate::event::{
     Event,
-    input::{KeyboardEvent, MouseEvent, TouchpadEvent, NumsLockEvent},
+    input::{KeyboardEvent, MouseEvent, TouchpadEvent},
 };
 use std::sync::{Arc, Mutex};
 
@@ -17,12 +17,12 @@ use std::sync::{Arc, Mutex};
 // 1. input_touchpad
 // 2. input_default
 // 3. xkb_config 
+// 4. keyboard_config 
 // to be implemented
-// 4. workspaces
-// 5. pinned_workspaces
-// 6. input_touchpad_override
-// 7. input_devices
-// 8. keyboard_config
+// 5. workspaces
+// 6. pinned_workspaces
+// 7. input_touchpad_override
+// 8. input_devices 
 // 9. autotile
 // 10. autotile_behaviour
 // 11. active_hint
@@ -120,7 +120,7 @@ impl InputState {
                 "keyboard_config" => match cfg.get::<KeyboardConfig>(key) {
                     Ok(new_config) => {
                         if let Some(old) = self.numslock.clone() {
-                            events.extend(NumsLockEvent::from(old, new_config.clone()));
+                            events.extend(KeyboardEvent::from_keyboard_config(old, new_config.clone()));
                         }
                         self.numslock = Some(new_config);
                     }

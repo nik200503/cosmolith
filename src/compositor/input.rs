@@ -1,6 +1,6 @@
 use std::error::Error;
 
-use crate::event::input::{KeyboardEvent, MouseEvent, TouchpadEvent, NumsLockEvent};
+use crate::event::input::{KeyboardEvent, MouseEvent, TouchpadEvent};
 
 use cosmic_comp_config::input::{
     AccelConfig, ClickMethod, DeviceState, ScrollConfig, ScrollMethod, TapButtonMap, TapConfig,
@@ -21,12 +21,7 @@ pub trait Input {
             KeyboardEvent::Options(v) => self.keyboard_options(v),
             KeyboardEvent::RepeatDelay(v) => self.keyboard_repeat_delay(v),
             KeyboardEvent::RepeatRate(v) => self.keyboard_repeat_rate(v),
-        }
-    }
-
-    fn apply_numslock_event(&self, event: NumsLockEvent) -> InputResult {
-        match event {
-            NumsLockEvent::State(v) => self.numslock_state(v),
+            KeyboardEvent::NumLock(v) => self.numslock_state(v),
         }
     }
 
